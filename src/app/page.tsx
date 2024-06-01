@@ -1,8 +1,9 @@
+import { FourColumnTable } from "./four-column-table";
 
-export default function Home() {
-  return (
-    <main>
-			<h1>Data tables</h1>
+export default function HomePage() {
+	return (
+		<main>
+			<FourColumnTable />
 		</main>
-  );
+	);
 }

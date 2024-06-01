@@ -9,9 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.4.2",
+    "@tanstack/react-table": "^8.17.3",
+    "@uidotdev/usehooks": "^2.4.1",
+    "dayjs": "^1.11.11",
     "next": "14.1.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-aria-components": "^1.2.1",
+    "react-dom": "^18",
+    "react-hook-form": "^7.51.5",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^20",
