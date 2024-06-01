@@ -17,7 +17,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${dmSans.className} leading-normal tracking-[-0.5px] text-[#1A202C]`}
+				className={`${dmSans.className} bg-[#F4F7FE] leading-normal tracking-[-0.5px] text-[#1A202C]`}
 			>
 				{children}
 			</body>
