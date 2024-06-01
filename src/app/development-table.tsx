@@ -144,45 +144,41 @@ export function DevelopmentTable() {
 			}),
 			columnHelper.display({
 				id: "actions",
-				cell: (props) => {
-					return (
-						<>
-							<DialogTrigger>
-								<Button>Delete</Button>
-								<Modal>
-									<Dialog role="alertdialog">
-										{({ close }) => (
-											<>
-												<Heading slot="title">Delete Product</Heading>
-												<p>
-													Are you sure you want to permanently delete this
-													product? This action cannot be undone.
-												</p>
-												<div style={{ display: "flex", gap: 8 }}>
-													<Button onPress={close}>Cancel</Button>
-													<Button
-														onPress={() => {
-															setData((prev) => {
-																const newData = prev;
-																newData.splice(props.row.index, 1);
+				cell: (props) => (
+					<DialogTrigger>
+						<Button>Delete</Button>
+						<Modal>
+							<Dialog role="alertdialog">
+								{({ close }) => (
+									<>
+										<Heading slot="title">Delete Product</Heading>
+										<p>
+											Are you sure you want to permanently delete this product?
+											This action cannot be undone.
+										</p>
+										<div style={{ display: "flex", gap: 8 }}>
+											<Button onPress={close}>Cancel</Button>
+											<Button
+												onPress={() => {
+													setData((prev) => {
+														const newData = prev;
+														newData.splice(props.row.index, 1);
 
-																return [...newData];
-															});
+														return [...newData];
+													});
 
-															close();
-														}}
-													>
-														Delete
-													</Button>
-												</div>
-											</>
-										)}
-									</Dialog>
-								</Modal>
-							</DialogTrigger>
-						</>
-					);
-				},
+													close();
+												}}
+											>
+												Delete
+											</Button>
+										</div>
+									</>
+								)}
+							</Dialog>
+						</Modal>
+					</DialogTrigger>
+				),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
 			}),
