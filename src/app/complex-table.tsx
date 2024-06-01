@@ -27,32 +27,63 @@ import {
 	Heading,
 	Input,
 	Label,
+	ListBox,
+	ListBoxItem,
 	Modal,
 	Popover,
+	Select,
+	SelectValue,
 	TextField,
 } from "react-aria-components";
 import { Controller, useForm } from "react-hook-form";
+import { IconType } from "react-icons";
+import { IoIosCheckmarkCircle, IoMdCloseCircle } from "react-icons/io";
+import { RiErrorWarningFill } from "react-icons/ri";
 import { InferType, mixed, object, string } from "yup";
+
+type Status = {
+	id: string;
+	name: string;
+	icon: IconType;
+};
+
+const status = [
+	{
+		id: "approved",
+		name: "Approved",
+		icon: IoIosCheckmarkCircle,
+	},
+	{
+		id: "disable",
+		name: "Disable",
+		icon: IoMdCloseCircle,
+	},
+	{
+		id: "error",
+		name: "Error",
+		icon: RiErrorWarningFill,
+	},
+] satisfies Status[];
 
 type Product = {
 	name: string;
+	status: Status;
 	progress: number;
-	quantity: number;
 	date: Date;
 };
 
 const defaultData: Product[] = [
 	{
 		name: "Marketplace",
-		progress: 75.5,
-		quantity: 2458,
+		status: status[0],
 		date: new Date(2021, 0, 12),
+		progress: 75.5,
 	},
 	{
 		name: "Venus DB PRO",
-		progress: 35.4,
-		quantity: 1485,
+		status: status[1],
 		date: new Date(2021, 1, 21),
+		progress: 35.4,
 	},
 ];
 
@@ -60,18 +91,22 @@ const columnHelper = createColumnHelper<Product>();
 
 const schema = object({
 	name: string().required().default(""),
-	progress: string().required().default(""),
-	quantity: string().required().default(""),
+	status: string()
+		.required()
+		.nullable()
+		.default(null)
+		.test("non-nullable", "Date is required", (value) => value !== null),
 	date: mixed<DateValue>()
 		.defined()
 		.nullable()
 		.default(null)
 		.test("non-nullable", "Date is required", (value) => value !== null),
+	progress: string().required().default(""),
 });
 
 type Schema = InferType<typeof schema>;
 
-export function FourColumnTable() {
+export function ComplexTable() {
 	const [data, setData] = useState(defaultData);
 	const [globalFilter, setGlobalFilter] = useState("");
 	const debouncedGlobalFilter = useDebounce(globalFilter, 500);
@@ -82,21 +117,35 @@ export function FourColumnTable() {
 				header: () => "Name",
 				cell: (info) => info.getValue(),
 			}),
-			columnHelper.accessor("progress", {
-				header: () => "Progress",
-				cell: (info) => `${info.getValue()}%`,
-				enableColumnFilter: false,
-				enableGlobalFilter: false,
-			}),
-			columnHelper.accessor("quantity", {
-				header: () => "Quantity",
-				cell: (info) => info.getValue(),
+			columnHelper.accessor("status", {
+				header: () => "Status",
+				cell: (info) => {
+					const status = info.getValue();
+					return (
+						<div className="flex items-center">
+							<status.icon /> {status.name}
+						</div>
+					);
+				},
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
 			}),
 			columnHelper.accessor("date", {
 				header: () => "Date",
 				cell: (info) => dayjs(info.getValue()).format("DD.MMM.YYYY"),
+				enableColumnFilter: false,
+				enableGlobalFilter: false,
+			}),
+			columnHelper.accessor("progress", {
+				header: () => "Progress",
+				cell: (info) => (
+					<div className="h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
+						<div
+							className="h-2.5 rounded-full bg-blue-600"
+							style={{ width: `${info.getValue()}%` }}
+						/>
+					</div>
+				),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
 			}),
@@ -163,7 +212,7 @@ export function FourColumnTable() {
 	return (
 		<div>
 			<div className="flex items-center">
-				<h2>4-Column Table</h2>
+				<h2>Complex Table</h2>
 
 				<DialogTrigger>
 					<Button>Add Product</Button>
@@ -173,11 +222,20 @@ export function FourColumnTable() {
 							{({ close }) => (
 								<form
 									onSubmit={form.handleSubmit((data) => {
+										const relatedStatus = status.find(
+											(s) => s.id === data.status,
+										);
+
+										if (!relatedStatus) {
+											close();
+											return;
+										}
+
 										setData((prev) => [
 											{
 												name: data.name,
+												status: relatedStatus,
 												progress: Number(data.progress),
-												quantity: Number(data.quantity),
 												date: dayjs(
 													data.date?.toString(),
 													"YYYY-MM-DD",
@@ -210,35 +268,34 @@ export function FourColumnTable() {
 
 									<Controller
 										control={form.control}
-										name="progress"
-										render={(renderProps) => (
-											<TextField
-												{...renderProps.field}
-												isInvalid={renderProps.fieldState.invalid}
+										name="status"
+										render={({
+											field: { onChange, value, disabled, ...restField },
+											fieldState,
+										}) => (
+											<Select
+												{...restField}
+												onSelectionChange={onChange}
+												selectedKey={value}
+												isDisabled={disabled}
+												isInvalid={fieldState.invalid}
 											>
-												<Label>Progress</Label>
-												<Input />
-												<FieldError>
-													{renderProps.fieldState.error?.message}
-												</FieldError>
-											</TextField>
-										)}
-									/>
-
-									<Controller
-										control={form.control}
-										name="quantity"
-										render={(renderProps) => (
-											<TextField
-												{...renderProps.field}
-												isInvalid={renderProps.fieldState.invalid}
-											>
-												<Label>Quantity</Label>
-												<Input />
-												<FieldError>
-													{renderProps.fieldState.error?.message}
-												</FieldError>
-											</TextField>
+												<Label>Status</Label>
+												<Button>
+													<SelectValue />
+													<span aria-hidden="true">▼</span>
+												</Button>
+												<FieldError>{fieldState.error?.message}</FieldError>
+												<Popover>
+													<ListBox>
+														{status.map((s) => (
+															<ListBoxItem id={s.id} key={s.id}>
+																{s.name}
+															</ListBoxItem>
+														))}
+													</ListBox>
+												</Popover>
+											</Select>
 										)}
 									/>
 
@@ -275,6 +332,23 @@ export function FourColumnTable() {
 													</Dialog>
 												</Popover>
 											</DatePicker>
+										)}
+									/>
+
+									<Controller
+										control={form.control}
+										name="progress"
+										render={(renderProps) => (
+											<TextField
+												{...renderProps.field}
+												isInvalid={renderProps.fieldState.invalid}
+											>
+												<Label>Progress</Label>
+												<Input />
+												<FieldError>
+													{renderProps.fieldState.error?.message}
+												</FieldError>
+											</TextField>
 										)}
 									/>
 

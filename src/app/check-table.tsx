@@ -174,7 +174,7 @@ export function CheckTable() {
 	});
 
 	return (
-		<>
+		<div>
 			<div className="flex items-center">
 				<h2>Check Table</h2>
 
@@ -334,6 +334,6 @@ export function CheckTable() {
 					))}
 				</tbody>
 			</table>
-		</>
+		</div>
 	);
 }

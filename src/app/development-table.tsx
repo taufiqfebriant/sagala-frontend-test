@@ -135,7 +135,7 @@ export function DevelopmentTable() {
 					<div className="h-2.5 w-full rounded-full bg-gray-200 dark:bg-gray-700">
 						<div
 							className="h-2.5 rounded-full bg-blue-600"
-							style={{ width: info.getValue() }}
+							style={{ width: `${info.getValue()}%` }}
 						/>
 					</div>
 				),
@@ -203,7 +203,7 @@ export function DevelopmentTable() {
 	});
 
 	return (
-		<>
+		<div>
 			<div className="flex items-center">
 				<h2>Development Table</h2>
 
@@ -380,6 +380,6 @@ export function DevelopmentTable() {
 					))}
 				</tbody>
 			</table>
-		</>
+		</div>
 	);
 }
