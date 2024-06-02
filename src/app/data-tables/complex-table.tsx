@@ -2,13 +2,16 @@
 
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
+	SortingFn,
 	createColumnHelper,
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
+	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 import { useDebounce } from "@uidotdev/usehooks";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import {
@@ -114,6 +117,12 @@ const schema = object({
 
 type Schema = InferType<typeof schema>;
 
+const sortStatusFn: SortingFn<Product> = (rowA, rowB, _columnId) => {
+	const statusA = rowA.original.status.name;
+	const statusB = rowB.original.status.name;
+	return statusA > statusB ? 1 : statusA < statusB ? -1 : 0;
+};
+
 export function ComplexTable() {
 	const [data, setData] = useState(defaultData);
 	const [globalFilter, setGlobalFilter] = useState("");
@@ -124,6 +133,7 @@ export function ComplexTable() {
 			columnHelper.accessor("name", {
 				header: () => "Name",
 				cell: (info) => info.getValue(),
+				sortingFn: "alphanumeric",
 			}),
 			columnHelper.accessor("status", {
 				header: () => "Status",
@@ -137,12 +147,14 @@ export function ComplexTable() {
 				},
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: sortStatusFn,
 			}),
 			columnHelper.accessor("date", {
 				header: () => "Date",
 				cell: (info) => dayjs(info.getValue()).format("DD.MMM.YYYY"),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: "datetime",
 			}),
 			columnHelper.accessor("progress", {
 				header: () => "Progress",
@@ -156,9 +168,11 @@ export function ComplexTable() {
 				),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: "basic",
 			}),
 			columnHelper.display({
 				id: "actions",
+				header: () => "Actions",
 				cell: (props) => (
 					<DialogTrigger>
 						<Button>Delete</Button>
@@ -196,6 +210,7 @@ export function ComplexTable() {
 				),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				enableSorting: false,
 			}),
 		],
 		[],
@@ -209,6 +224,7 @@ export function ComplexTable() {
 		},
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
+		getSortedRowModel: getSortedRowModel(),
 		globalFilterFn: "includesString",
 	});
 
@@ -398,15 +414,32 @@ export function ComplexTable() {
 							<tr key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
 									<th
-										className="border-b border-slate-200 py-3 pl-6 pr-[0.625rem] text-left text-[0.625rem] font-bold uppercase tracking-wider text-[#A0AEC0] md:text-xs"
+										className="border-b border-slate-200 text-left text-[0.625rem] font-bold uppercase tracking-wider text-[#A0AEC0] md:text-xs"
 										key={header.id}
 									>
-										{header.isPlaceholder
-											? null
-											: flexRender(
+										{header.isPlaceholder ? null : (
+											<div
+												className={clsx("py-3 pl-6 pr-[0.625rem]", {
+													"cursor-pointer select-none":
+														header.column.getCanSort(),
+												})}
+												onClick={header.column.getToggleSortingHandler()}
+												title={
+													header.column.getCanSort()
+														? header.column.getNextSortingOrder() === "asc"
+															? "Sort ascending"
+															: header.column.getNextSortingOrder() === "desc"
+																? "Sort descending"
+																: "Clear sort"
+														: undefined
+												}
+											>
+												{flexRender(
 													header.column.columnDef.header,
 													header.getContext(),
 												)}
+											</div>
+										)}
 									</th>
 								))}
 							</tr>
