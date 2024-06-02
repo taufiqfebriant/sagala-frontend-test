@@ -19,6 +19,9 @@ import {
 	Calendar,
 	CalendarCell,
 	CalendarGrid,
+	CalendarGridBody,
+	CalendarGridHeader,
+	CalendarHeaderCell,
 	DateInput,
 	DatePicker,
 	DateSegment,
@@ -275,7 +278,20 @@ export function ComplexTable() {
 						Complex Table
 					</h2>
 
-					<DialogTrigger>
+					<DialogTrigger
+						onOpenChange={(isOpen) => {
+							if (!isOpen) {
+								setTimeout(() => {
+									form.reset({
+										name: "",
+										status: null,
+										date: null,
+										progress: "",
+									});
+								}, 500);
+							}
+						}}
+					>
 						<Button
 							type="button"
 							className="h-10 flex-shrink-0 rounded-[70px] bg-[#11047A] px-6 text-sm font-medium text-white shadow-[rgba(112,144,176,0.08)_45px_76px_113px_7px]"
@@ -283,146 +299,211 @@ export function ComplexTable() {
 							Add Product
 						</Button>
 
-						<Modal>
-							<Dialog>
-								{({ close }) => (
-									<form
-										onSubmit={form.handleSubmit((data) => {
-											const relatedStatus = status.find(
-												(s) => s.id === data.status,
-											);
+						<ModalOverlay
+							className={({ isEntering, isExiting }) =>
+								`fixed inset-0 z-10 flex min-h-full items-center justify-center overflow-y-auto bg-black/25 p-4 text-center backdrop-blur ${isEntering ? "animate-in fade-in duration-300 ease-out" : ""} ${isExiting ? "animate-out fade-out duration-200 ease-in" : ""} `
+							}
+						>
+							<Modal
+								className={({ isEntering, isExiting }) =>
+									`w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl ${isEntering ? "animate-in zoom-in-95 duration-300 ease-out" : ""} ${isExiting ? "animate-out zoom-out-95 duration-200 ease-in" : ""} `
+								}
+							>
+								<Dialog className="relative outline-none">
+									{({ close }) => (
+										<form
+											onSubmit={form.handleSubmit((data) => {
+												const relatedStatus = status.find(
+													(s) => s.id === data.status,
+												);
 
-											if (!relatedStatus) {
+												if (!relatedStatus) {
+													close();
+													return;
+												}
+
+												setData((prev) => [
+													{
+														name: data.name,
+														status: relatedStatus,
+														progress: Number(data.progress),
+														date: dayjs(
+															data.date?.toString(),
+															"YYYY-MM-DD",
+														).toDate(),
+													},
+													...prev,
+												]);
+
 												close();
-												return;
-											}
+											})}
+										>
+											<Heading
+												slot="title"
+												className="my-0 text-2xl font-semibold leading-6 text-slate-700"
+											>
+												Add Product
+											</Heading>
 
-											setData((prev) => [
-												{
-													name: data.name,
-													status: relatedStatus,
-													progress: Number(data.progress),
-													date: dayjs(
-														data.date?.toString(),
-														"YYYY-MM-DD",
-													).toDate(),
-												},
-												...prev,
-											]);
+											<div className="mt-4 flex flex-col gap-y-4">
+												<Controller
+													control={form.control}
+													name="name"
+													render={(renderProps) => (
+														<TextField
+															{...renderProps.field}
+															isInvalid={renderProps.fieldState.invalid}
+															autoFocus
+															className="flex flex-col gap-1"
+														>
+															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
+																Name
+															</Label>
+															<Input className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
+															<FieldError className="text-sm text-red-600">
+																{renderProps.fieldState.error?.message}
+															</FieldError>
+														</TextField>
+													)}
+												/>
 
-											close();
-										})}
-									>
-										<Heading slot="title">Add Product</Heading>
-										<Controller
-											control={form.control}
-											name="name"
-											render={(renderProps) => (
-												<TextField
-													{...renderProps.field}
-													isInvalid={renderProps.fieldState.invalid}
-													autoFocus
+												<Controller
+													control={form.control}
+													name="status"
+													render={({
+														field: { onChange, value, disabled, ...restField },
+														fieldState,
+													}) => (
+														<Select
+															{...restField}
+															onSelectionChange={onChange}
+															selectedKey={value}
+															isDisabled={disabled}
+															isInvalid={fieldState.invalid}
+															className="group flex flex-col gap-1"
+														>
+															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
+																Status
+															</Label>
+															<Button>
+																<SelectValue />
+																<span aria-hidden="true">▼</span>
+															</Button>
+															<FieldError>
+																{fieldState.error?.message}
+															</FieldError>
+															<Popover>
+																<ListBox>
+																	{status.map((s) => (
+																		<ListBoxItem id={s.id} key={s.id}>
+																			{s.name}
+																		</ListBoxItem>
+																	))}
+																</ListBox>
+															</Popover>
+														</Select>
+													)}
+												/>
+
+												<Controller
+													control={form.control}
+													name="date"
+													render={(renderProps) => (
+														<DatePicker
+															{...renderProps.field}
+															isInvalid={renderProps.fieldState.invalid}
+															className="group flex flex-col gap-1"
+														>
+															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
+																Date
+															</Label>
+															<Group className="group flex h-9 w-auto min-w-[208px] items-center overflow-hidden rounded-lg border-2 bg-white forced-colors:bg-[Field]">
+																<DateInput className="block min-w-[150px] flex-1 px-2 py-1.5 text-sm">
+																	{(segment) => (
+																		<DateSegment
+																			className="type-literal:px-0 inline rounded p-0.5 text-gray-800 caret-transparent outline outline-0 forced-color-adjust-none dark:text-zinc-200 forced-colors:text-[ButtonText]"
+																			segment={segment}
+																		/>
+																	)}
+																</DateInput>
+																<Button>▼</Button>
+															</Group>
+															<FieldError className="text-sm text-red-600">
+																{renderProps.fieldState.error?.message}
+															</FieldError>
+															<Popover>
+																<Dialog className="relative max-h-[inherit] overflow-auto p-6 outline outline-0 [[data-placement]>&]:p-4">
+																	<Calendar>
+																		<header className="flex w-full items-center gap-1 px-1 pb-4">
+																			<Button slot="previous">◀</Button>
+																			<Heading className="mx-2 flex-1 text-center text-xl font-semibold text-zinc-900 dark:text-zinc-200" />
+																			<Button slot="next">▶</Button>
+																		</header>
+																		<CalendarGrid>
+																			<CalendarGridHeader>
+																				{(day) => (
+																					<CalendarHeaderCell className="text-xs font-semibold text-gray-500">
+																						{day}
+																					</CalendarHeaderCell>
+																				)}
+																			</CalendarGridHeader>
+																			<CalendarGridBody>
+																				{(date) => (
+																					<CalendarCell
+																						date={date}
+																						className="flex h-9 w-9 cursor-default items-center justify-center rounded-full text-sm forced-color-adjust-none"
+																					/>
+																				)}
+																			</CalendarGridBody>
+																		</CalendarGrid>
+																	</Calendar>
+																</Dialog>
+															</Popover>
+														</DatePicker>
+													)}
+												/>
+
+												<Controller
+													control={form.control}
+													name="progress"
+													render={(renderProps) => (
+														<TextField
+															{...renderProps.field}
+															isInvalid={renderProps.fieldState.invalid}
+															className="flex flex-col gap-1"
+														>
+															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
+																Progress
+															</Label>
+															<Input className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
+															<FieldError className="text-sm text-red-600">
+																{renderProps.fieldState.error?.message}
+															</FieldError>
+														</TextField>
+													)}
+												/>
+											</div>
+
+											<div className="mt-6 flex justify-end gap-2">
+												<Button
+													className="pressed:bg-slate-300 inline-flex cursor-default justify-center rounded-md border border-solid border-transparent bg-slate-200 px-5 py-2 font-[inherit] text-base font-semibold text-slate-800 outline-none ring-blue-500 ring-offset-2 transition-colors hover:border-slate-300 focus-visible:ring-2"
+													onPress={close}
 												>
-													<Label>Name</Label>
-													<Input />
-													<FieldError>
-														{renderProps.fieldState.error?.message}
-													</FieldError>
-												</TextField>
-											)}
-										/>
+													Cancel
+												</Button>
 
-										<Controller
-											control={form.control}
-											name="status"
-											render={({
-												field: { onChange, value, disabled, ...restField },
-												fieldState,
-											}) => (
-												<Select
-													{...restField}
-													onSelectionChange={onChange}
-													selectedKey={value}
-													isDisabled={disabled}
-													isInvalid={fieldState.invalid}
+												<Button
+													type="submit"
+													className="inline-flex cursor-default justify-center rounded-md border border-solid border-transparent bg-[#11047A] px-5 py-2 font-[inherit] text-base font-semibold text-white outline-none ring-blue-500 ring-offset-2 transition-colors hover:border-red-600 focus-visible:ring-2"
 												>
-													<Label>Status</Label>
-													<Button>
-														<SelectValue />
-														<span aria-hidden="true">▼</span>
-													</Button>
-													<FieldError>{fieldState.error?.message}</FieldError>
-													<Popover>
-														<ListBox>
-															{status.map((s) => (
-																<ListBoxItem id={s.id} key={s.id}>
-																	{s.name}
-																</ListBoxItem>
-															))}
-														</ListBox>
-													</Popover>
-												</Select>
-											)}
-										/>
-
-										<Controller
-											control={form.control}
-											name="date"
-											render={(renderProps) => (
-												<DatePicker
-													{...renderProps.field}
-													isInvalid={renderProps.fieldState.invalid}
-												>
-													<Label>Date</Label>
-													<Group>
-														<DateInput>
-															{(segment) => <DateSegment segment={segment} />}
-														</DateInput>
-														<Button>▼</Button>
-													</Group>
-													<FieldError>
-														{renderProps.fieldState.error?.message}
-													</FieldError>
-													<Popover>
-														<Dialog>
-															<Calendar>
-																<header>
-																	<Button slot="previous">◀</Button>
-																	<Heading />
-																	<Button slot="next">▶</Button>
-																</header>
-																<CalendarGrid>
-																	{(date) => <CalendarCell date={date} />}
-																</CalendarGrid>
-															</Calendar>
-														</Dialog>
-													</Popover>
-												</DatePicker>
-											)}
-										/>
-
-										<Controller
-											control={form.control}
-											name="progress"
-											render={(renderProps) => (
-												<TextField
-													{...renderProps.field}
-													isInvalid={renderProps.fieldState.invalid}
-												>
-													<Label>Progress</Label>
-													<Input />
-													<FieldError>
-														{renderProps.fieldState.error?.message}
-													</FieldError>
-												</TextField>
-											)}
-										/>
-
-										<Button type="submit">Submit</Button>
-									</form>
-								)}
-							</Dialog>
-						</Modal>
+													Submit
+												</Button>
+											</div>
+										</form>
+									)}
+								</Dialog>
+							</Modal>
+						</ModalOverlay>
 					</DialogTrigger>
 				</div>
 
