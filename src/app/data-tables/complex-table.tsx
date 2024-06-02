@@ -220,7 +220,7 @@ export function ComplexTable() {
 	return (
 		<div className="flex flex-col gap-y-5 rounded-[20px] bg-white py-5">
 			<div className="flex flex-col gap-y-4 px-[1.5625rem]">
-				<div className="flex items-center justify-between">
+				<div className="flex items-center justify-between gap-x-4">
 					<h2 className="text-[1.375rem] font-bold leading-[100%] text-[#1B2559]">
 						Complex Table
 					</h2>
@@ -228,7 +228,7 @@ export function ComplexTable() {
 					<DialogTrigger>
 						<Button
 							type="button"
-							className="h-10 rounded-[70px] bg-[#11047A] px-6 text-sm font-medium text-white shadow-[rgba(112,144,176,0.08)_45px_76px_113px_7px]"
+							className="h-10 flex-shrink-0 rounded-[70px] bg-[#11047A] px-6 text-sm font-medium text-white shadow-[rgba(112,144,176,0.08)_45px_76px_113px_7px]"
 						>
 							Add Product
 						</Button>

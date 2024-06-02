@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import Link from "next/link";
-import { MdHome, MdOutlineShoppingCart } from "react-icons/md";
+import { MdBarChart, MdHome, MdOutlineShoppingCart } from "react-icons/md";
 import "./globals.css";
 
 const dmSans = DM_Sans({ subsets: ["latin"] });
@@ -22,7 +22,7 @@ export default function RootLayout({
 				className={`${dmSans.className} bg-[#F4F7FE] leading-normal tracking-[-0.5px] text-[#1A202C]`}
 			>
 				<div className="flex">
-					<div className="w-full max-w-[17.8125rem] flex-shrink-0 bg-white px-4 pt-[1.5625rem] xl:max-w-[18.75rem]">
+					<div className="sticky left-0 top-0 hidden h-screen w-full max-w-[17.8125rem] flex-shrink-0 bg-white px-4 pt-[1.5625rem] xl:block xl:max-w-[18.75rem]">
 						<p className="my-8 text-center font-sans text-[1.5625rem] uppercase leading-none text-[#1B254B]">
 							<span className="font-bold">Horizon</span> Free
 						</p>
@@ -44,10 +44,19 @@ export default function RootLayout({
 									<li>
 										<Link
 											href="/"
-											className="flex items-center gap-x-[1.125rem]"
+											className="flex h-[2.875rem] items-center gap-x-[1.125rem]"
 										>
 											<MdOutlineShoppingCart size={20} color="#8F9BBA" />
 											<p className="text-[#8F9BBA]">NFT Marketplace</p>
+										</Link>
+									</li>
+									<li>
+										<Link
+											href="/data-tables"
+											className="flex h-[2.875rem] items-center gap-x-[1.125rem]"
+										>
+											<MdBarChart size={20} color="#8F9BBA" />
+											<p className="text-[#8F9BBA]">Data Tables</p>
 										</Link>
 									</li>
 								</ul>
