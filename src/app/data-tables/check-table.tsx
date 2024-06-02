@@ -6,9 +6,11 @@ import {
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
+	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 import { useDebounce } from "@uidotdev/usehooks";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import {
@@ -95,24 +97,28 @@ export function CheckTable() {
 						)}
 					</Checkbox>
 				),
+				sortingFn: "alphanumeric",
 			}),
 			columnHelper.accessor("progress", {
 				header: () => "Progress",
 				cell: (info) => `${info.getValue()}%`,
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: "basic",
 			}),
 			columnHelper.accessor("quantity", {
 				header: () => "Quantity",
 				cell: (info) => info.getValue(),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: "basic",
 			}),
 			columnHelper.accessor("date", {
 				header: () => "Date",
 				cell: (info) => dayjs(info.getValue()).format("DD.MMM.YYYY"),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: "datetime",
 			}),
 			columnHelper.display({
 				id: "actions",
@@ -154,6 +160,7 @@ export function CheckTable() {
 				),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				enableSorting: false,
 			}),
 		],
 		[],
@@ -167,6 +174,7 @@ export function CheckTable() {
 		},
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
+		getSortedRowModel: getSortedRowModel(),
 		globalFilterFn: "includesString",
 	});
 
@@ -331,15 +339,32 @@ export function CheckTable() {
 							<tr key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
 									<th
-										className="border-b border-slate-200 py-3 pl-6 pr-[0.625rem] text-left text-[0.625rem] font-bold uppercase tracking-wider text-[#A0AEC0] md:text-xs"
+										className="border-b border-slate-200 text-left text-[0.625rem] font-bold uppercase tracking-wider text-[#A0AEC0] md:text-xs"
 										key={header.id}
 									>
-										{header.isPlaceholder
-											? null
-											: flexRender(
+										{header.isPlaceholder ? null : (
+											<div
+												className={clsx("py-3 pl-6 pr-[0.625rem]", {
+													"cursor-pointer select-none":
+														header.column.getCanSort(),
+												})}
+												onClick={header.column.getToggleSortingHandler()}
+												title={
+													header.column.getCanSort()
+														? header.column.getNextSortingOrder() === "asc"
+															? "Sort ascending"
+															: header.column.getNextSortingOrder() === "desc"
+																? "Sort descending"
+																: "Clear sort"
+														: undefined
+												}
+											>
+												{flexRender(
 													header.column.columnDef.header,
 													header.getContext(),
 												)}
+											</div>
+										)}
 									</th>
 								))}
 							</tr>

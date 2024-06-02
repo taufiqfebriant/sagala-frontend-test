@@ -371,7 +371,7 @@ export function DevelopmentTable() {
 					</DialogTrigger>
 				</div>
 
-				<div className="sele flex items-center overflow-hidden rounded-2xl bg-[#F4F7FE]">
+				<div className="flex items-center overflow-hidden rounded-2xl bg-[#F4F7FE]">
 					<div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
 						<IoIosSearch size={20} color="#2D3748" />
 					</div>
