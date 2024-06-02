@@ -6,9 +6,11 @@ import {
 	flexRender,
 	getCoreRowModel,
 	getFilteredRowModel,
+	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
 import { useDebounce } from "@uidotdev/usehooks";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import {
@@ -115,6 +117,7 @@ export function DevelopmentTable() {
 			columnHelper.accessor("name", {
 				header: () => "Name",
 				cell: (info) => info.getValue(),
+				sortingFn: "alphanumeric",
 			}),
 			columnHelper.accessor("technologies", {
 				header: () => "Tech",
@@ -127,12 +130,14 @@ export function DevelopmentTable() {
 				),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: "basic",
 			}),
 			columnHelper.accessor("date", {
 				header: () => "Date",
 				cell: (info) => dayjs(info.getValue()).format("DD.MMM.YYYY"),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: "datetime",
 			}),
 			columnHelper.accessor("progress", {
 				header: () => "Progress",
@@ -149,6 +154,7 @@ export function DevelopmentTable() {
 				),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				sortingFn: "basic",
 			}),
 			columnHelper.display({
 				id: "actions",
@@ -190,6 +196,7 @@ export function DevelopmentTable() {
 				),
 				enableColumnFilter: false,
 				enableGlobalFilter: false,
+				enableSorting: false,
 			}),
 		],
 		[],
@@ -203,6 +210,7 @@ export function DevelopmentTable() {
 		},
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
+		getSortedRowModel: getSortedRowModel(),
 		globalFilterFn: "includesString",
 	});
 
@@ -363,7 +371,7 @@ export function DevelopmentTable() {
 					</DialogTrigger>
 				</div>
 
-				<div className="flex items-center overflow-hidden rounded-2xl bg-[#F4F7FE]">
+				<div className="sele flex items-center overflow-hidden rounded-2xl bg-[#F4F7FE]">
 					<div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
 						<IoIosSearch size={20} color="#2D3748" />
 					</div>
@@ -385,15 +393,32 @@ export function DevelopmentTable() {
 							<tr key={headerGroup.id}>
 								{headerGroup.headers.map((header) => (
 									<th
-										className="border-b border-slate-200 py-3 pl-6 pr-[0.625rem] text-left text-[0.625rem] font-bold uppercase tracking-wider text-[#A0AEC0] md:text-xs"
+										className="border-b border-slate-200 text-left text-[0.625rem] font-bold uppercase tracking-wider text-[#A0AEC0] md:text-xs"
 										key={header.id}
 									>
-										{header.isPlaceholder
-											? null
-											: flexRender(
+										{header.isPlaceholder ? null : (
+											<div
+												className={clsx("py-3 pl-6 pr-[0.625rem]", {
+													"cursor-pointer select-none":
+														header.column.getCanSort(),
+												})}
+												onClick={header.column.getToggleSortingHandler()}
+												title={
+													header.column.getCanSort()
+														? header.column.getNextSortingOrder() === "asc"
+															? "Sort ascending"
+															: header.column.getNextSortingOrder() === "desc"
+																? "Sort descending"
+																: "Clear sort"
+														: undefined
+												}
+											>
+												{flexRender(
 													header.column.columnDef.header,
 													header.getContext(),
 												)}
+											</div>
+										)}
 									</th>
 								))}
 							</tr>

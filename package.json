@@ -12,6 +12,7 @@
     "@hookform/resolvers": "^3.4.2",
     "@tanstack/react-table": "^8.17.3",
     "@uidotdev/usehooks": "^2.4.1",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.11",
     "next": "14.1.4",
     "react": "^18",
