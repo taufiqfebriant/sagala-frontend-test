@@ -32,6 +32,7 @@ import {
 	Input,
 	Label,
 	Modal,
+	ModalOverlay,
 	Popover,
 	TextField,
 } from "react-aria-components";
@@ -162,36 +163,58 @@ export function DevelopmentTable() {
 				cell: (props) => (
 					<DialogTrigger>
 						<Button>Delete</Button>
-						<Modal>
-							<Dialog role="alertdialog">
-								{({ close }) => (
-									<>
-										<Heading slot="title">Delete Product</Heading>
-										<p>
-											Are you sure you want to permanently delete this product?
-											This action cannot be undone.
-										</p>
-										<div style={{ display: "flex", gap: 8 }}>
-											<Button onPress={close}>Cancel</Button>
-											<Button
-												onPress={() => {
-													setData((prev) => {
-														const newData = prev;
-														newData.splice(props.row.index, 1);
 
-														return [...newData];
-													});
-
-													close();
-												}}
+						<ModalOverlay
+							className={({ isEntering, isExiting }) =>
+								`fixed inset-0 z-10 flex min-h-full items-center justify-center overflow-y-auto bg-black/25 p-4 text-center backdrop-blur ${isEntering ? "animate-in fade-in duration-300 ease-out" : ""} ${isExiting ? "animate-out fade-out duration-200 ease-in" : ""} `
+							}
+						>
+							<Modal
+								className={({ isEntering, isExiting }) =>
+									`w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl ${isEntering ? "animate-in zoom-in-95 duration-300 ease-out" : ""} ${isExiting ? "animate-out zoom-out-95 duration-200 ease-in" : ""} `
+								}
+							>
+								<Dialog role="alertdialog" className="relative outline-none">
+									{({ close }) => (
+										<>
+											<Heading
+												slot="title"
+												className="my-0 text-2xl font-semibold leading-6 text-slate-700"
 											>
-												Delete
-											</Button>
-										</div>
-									</>
-								)}
-							</Dialog>
-						</Modal>
+												Delete Product
+											</Heading>
+											<p className="mt-3 text-slate-500">
+												Are you sure you want to permanently delete this
+												product? This action cannot be undone.
+											</p>
+											<div className="mt-6 flex justify-end gap-2">
+												<Button
+													className="pressed:bg-slate-300 inline-flex cursor-default justify-center rounded-md border border-solid border-transparent bg-slate-200 px-5 py-2 font-[inherit] text-base font-semibold text-slate-800 outline-none ring-blue-500 ring-offset-2 transition-colors hover:border-slate-300 focus-visible:ring-2"
+													onPress={close}
+												>
+													Cancel
+												</Button>
+												<Button
+													onPress={() => {
+														setData((prev) => {
+															const newData = prev;
+															newData.splice(props.row.index, 1);
+
+															return [...newData];
+														});
+
+														close();
+													}}
+													className="pressed:bg-red-600 inline-flex cursor-default justify-center rounded-md border border-solid border-transparent bg-red-500 px-5 py-2 font-[inherit] text-base font-semibold text-white outline-none ring-blue-500 ring-offset-2 transition-colors hover:border-red-600 focus-visible:ring-2"
+												>
+													Delete
+												</Button>
+											</div>
+										</>
+									)}
+								</Dialog>
+							</Modal>
+						</ModalOverlay>
 					</DialogTrigger>
 				),
 				enableColumnFilter: false,
