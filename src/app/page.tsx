@@ -1,9 +1,10 @@
+import type { Metadata } from "next";
+import { Container } from "./components/container";
+
+export const metadata: Metadata = {
+	title: "Main Dashboard | Sagala Frontend Test",
+};
+
 export default function MainDashboardPage() {
-	return (
-		<main className="flex-1 px-5 pb-5 pt-[3.125rem]">
-			<h1 className="text-[2.125rem] font-bold text-[#1B254B]">
-				Main Dashboard
-			</h1>
-		</main>
-	);
+	return <Container title="Main Dashboard" />;
 }
