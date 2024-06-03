@@ -9,6 +9,7 @@ import {
 	useReactTable,
 } from "@tanstack/react-table";
 import { useDebounce } from "@uidotdev/usehooks";
+import clsx from "clsx";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import {
@@ -279,7 +280,7 @@ export function DevelopmentTable() {
 					>
 						<Button
 							type="button"
-							className="h-10 flex-shrink-0 rounded-[70px] bg-[#11047A] px-6 text-sm font-medium text-white shadow-[rgba(112,144,176,0.08)_45px_76px_113px_7px]"
+							className="h-10 flex-shrink-0 rounded-[70px] bg-[#11047A] px-6 text-sm font-medium text-white shadow-[rgba(112,144,176,0.08)_45px_76px_113px_7px] transition-colors hover:bg-[#190793]"
 						>
 							Add Product
 						</Button>
@@ -368,8 +369,20 @@ export function DevelopmentTable() {
 																>
 																	{({ isSelected }) => (
 																		<div className="flex items-center gap-x-2">
-																			<div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 transition">
-																				{isSelected ? <MdCheck /> : null}
+																			<div
+																				className={clsx(
+																					"flex h-5 w-5 flex-shrink-0 items-center justify-center rounded border-2 transition",
+																					{
+																						"border-[#422AFB] bg-[#422AFB] group-pressed:[--color:theme(colors.gray.800)] forced-colors:![--color:Highlight]":
+																							isSelected,
+																						"bg-white [--color:theme(colors.gray.400)] group-pressed:[--color:theme(colors.gray.500)]":
+																							!isSelected,
+																					},
+																				)}
+																			>
+																				{isSelected ? (
+																					<MdCheck color="#FFFFFF" />
+																				) : null}
 																			</div>
 																			{technology.name}
 																		</div>

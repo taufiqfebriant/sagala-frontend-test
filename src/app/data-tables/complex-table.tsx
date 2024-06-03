@@ -294,7 +294,7 @@ export function ComplexTable() {
 					>
 						<Button
 							type="button"
-							className="h-10 flex-shrink-0 rounded-[70px] bg-[#11047A] px-6 text-sm font-medium text-white shadow-[rgba(112,144,176,0.08)_45px_76px_113px_7px]"
+							className="h-10 flex-shrink-0 rounded-[70px] bg-[#11047A] px-6 text-sm font-medium text-white shadow-[rgba(112,144,176,0.08)_45px_76px_113px_7px] transition-colors hover:bg-[#190793]"
 						>
 							Add Product
 						</Button>
