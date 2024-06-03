@@ -125,7 +125,14 @@ const schema = object({
 			"Date is a required field",
 			(value) => value !== null,
 		),
-	progress: string().label("Progress").required().default(""),
+	progress: string()
+		.label("Progress")
+		.required()
+		.matches(
+			/^\d+(\.\d+)?$/,
+			"Must be an integer or a decimal number. Example: 70 or 70.5",
+		)
+		.default(""),
 });
 
 type Schema = InferType<typeof schema>;
@@ -359,7 +366,7 @@ export function ComplexTable() {
 															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
 																Name
 															</Label>
-															<Input className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
+															<Input className="block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
 															<FieldError className="text-sm text-red-600">
 																{renderProps.fieldState.error?.message}
 															</FieldError>
@@ -385,8 +392,8 @@ export function ComplexTable() {
 															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
 																Status
 															</Label>
-															<Button className="flex w-full min-w-[150px] cursor-default items-center gap-4 rounded-lg border border-black/10 bg-gray-50 py-2 pl-3 pr-2 text-start shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] transition">
-																<SelectValue className="flex-1 text-sm placeholder-shown:italic" />
+															<Button className="flex w-full min-w-[150px] cursor-default items-center gap-4 rounded-lg border border-black/10 py-2 pl-3 pr-2 text-start shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)] transition">
+																<SelectValue className="flex-1 text-sm" />
 																<BiSolidDownArrow
 																	aria-hidden
 																	className="h-4 w-4 group-disabled:text-gray-200 forced-colors:text-[ButtonText] forced-colors:group-disabled:text-[GrayText]"
@@ -484,7 +491,7 @@ export function ComplexTable() {
 															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
 																Progress
 															</Label>
-															<Input className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
+															<Input className="block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
 															<FieldError className="text-sm text-red-600">
 																{renderProps.fieldState.error?.message}
 															</FieldError>

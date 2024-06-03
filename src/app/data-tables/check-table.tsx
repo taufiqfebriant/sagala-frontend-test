@@ -70,8 +70,22 @@ const columnHelper = createColumnHelper<Product>();
 
 const schema = object({
 	name: string().label("Name").required().default(""),
-	progress: string().label("Progress").required().default(""),
-	quantity: string().label("Quantity").required().default(""),
+	progress: string()
+		.label("Progress")
+		.required()
+		.matches(
+			/^\d+(\.\d+)?$/,
+			"Must be an integer or a decimal number. Example: 70 or 70.5",
+		)
+		.default(""),
+	quantity: string()
+		.label("Quantity")
+		.required()
+		.matches(
+			/^\d+(\.\d+)?$/,
+			"Must be an integer or a decimal number. Example: 70 or 70.5",
+		)
+		.default(""),
 	date: mixed<DateValue>()
 		.defined()
 		.nullable()
@@ -306,7 +320,7 @@ export function CheckTable() {
 															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
 																Name
 															</Label>
-															<Input className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
+															<Input className="block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
 															<FieldError className="text-sm text-red-600">
 																{renderProps.fieldState.error?.message}
 															</FieldError>
@@ -326,7 +340,7 @@ export function CheckTable() {
 															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
 																Progress
 															</Label>
-															<Input className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
+															<Input className="block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
 															<FieldError className="text-sm text-red-600">
 																{renderProps.fieldState.error?.message}
 															</FieldError>
@@ -346,7 +360,7 @@ export function CheckTable() {
 															<Label className="w-fit cursor-default text-sm font-medium text-gray-500">
 																Quantity
 															</Label>
-															<Input className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
+															<Input className="block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500" />
 															<FieldError className="text-sm text-red-600">
 																{renderProps.fieldState.error?.message}
 															</FieldError>
