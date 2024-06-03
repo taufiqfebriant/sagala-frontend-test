@@ -130,7 +130,7 @@ export function Container(props: Props) {
 												<button
 													type="button"
 													onClick={close}
-													className="absolute -top-10 right-0"
+													className="absolute -top-8 right-0"
 												>
 													<MdClose size={24} />
 												</button>
